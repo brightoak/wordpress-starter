@@ -3,13 +3,22 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
+projectRoot=`pwd`
+while true; do
+    read -p "This will set up a new Bright Oak WordPress project. Continue?[y or n]\n" yn
+    case $yn in
+        [Yy]* ) break;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
 #
 # Download latest WordPress, unzip, and move files to current directory.
-wget https://wordpress.org/latest.tar.gz
+wget -nv https://wordpress.org/latest.tar.gz
 tar xzvf latest.tar.gz
 cd wordpress
 mv * ..
-cd ..
+cd $projectRoot
 rmdir wordpress
 rm latest.tar.gz
 
@@ -32,6 +41,24 @@ cd $projectName
 yarn
 yarn build
 
+# Download stubs from starter repository
+mkdir app/BrightOak
+cd app/BrightOak
+wget -nv https://raw.githubusercontent.com/brightoak/wordpress-starter/master/BrightOak/CustomApiEndpoints.php
+wget -nv https://raw.githubusercontent.com/brightoak/wordpress-starter/master/BrightOak/CustomFeilds.php
+wget -nv https://raw.githubusercontent.com/brightoak/wordpress-starter/master/BrightOak/CustomTaxonomes.php
+wget -nv https://raw.githubusercontent.com/brightoak/wordpress-starter/master/BrightOak/PostTypes.php
+wget -nv https://raw.githubusercontent.com/brightoak/wordpress-starter/master/BrightOak/ThemeOptions.php
+
+# Make sure composer is aware of those new files we just created
+cd ../..
+composer dump-autoload
+
+cd $projectRoot
+
+# Add .gitignore
+wget -nv https://raw.githubusercontent.com/brightoak/wordpress-starter/master/.gitignore
+
 # Get database info and update wp-config-sample.php.
 printf "${YELLOW}Enter database host IP:${NC}\n"
 read dbHost
@@ -42,8 +69,6 @@ read dbUser
 printf "${YELLOW}Enter database password:${NC}\n"
 read dbPassword
 
-#Change dir back to project root.
-cd ../../..
 sed -i.bak "s/database_name_here/$dbName/" wp-config-sample.php
 sed -i.bak "s/username_here/$dbUser/" wp-config-sample.php
 sed -i.bak "s/password_here/$dbPassword/" wp-config-sample.php
@@ -76,7 +101,15 @@ wp db reset
 wp core install --url="$devUrl" --title="$devTitle" --admin_user="$devAdminName" --admin_email="$devAdminEmail"
 wp plugin activate --all
 
-#wp plugin activate --all
+printf "${YELLOW}Enter bitbucket repo (brghtoak/example):${NC}\n"
+read repo
+git init
+git remote add origin git@bitbucket.org:$repo.git
+git checkout -b develop
+git add .
+git commit -m "initial commit"
+git push -u origin develop
+
 
 rm *.bak
 printf "${YELLOW}You must manually activate the Sage theme from within WordPress.${NC}\n"
