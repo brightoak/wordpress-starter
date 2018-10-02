@@ -1,1 +1,10 @@
 .idea/
+.vscode/
+/wp-config.php
+/vendor
+/wp-content/plugins
+/wp-content/uploads
+*.sql
+wp-cli.yml
+/wp-content/debug.log
+.vs
