@@ -1,0 +1,21 @@
+{
+  "name": "brightoak/PROJECTNAME",
+  "repositories":[
+    {
+      "type":"composer",
+      "url":"https://wpackagist.org"
+    },
+    {
+      "type": "vcs",
+      "url": "git@bitbucket.org:brightoak/advanced-custom-fields-pro.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@bitbucket.org:brightoak/wp-offload-s3.git"
+    }
+  ],
+  "require": {
+    "brightoak/advanced-custom-fields-pro":"@dev",
+    "brightoak/wp-offload-s3":"@dev"
+  }
+}
